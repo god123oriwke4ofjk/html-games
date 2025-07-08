@@ -47,16 +47,25 @@ body {
     border: 2px solid hotpink;
     padding: 5px;
 }
-.weird {
-    animation: wobble 0.5s infinite;
-    font-size: 12px;
-    color: magenta;
-    transform: rotate(5deg);
+#alphabet {
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
 }
-@keyframes wobble {
-    0% { transform: rotate(5deg); }
-    50% { transform: rotate(-5deg); }
-    100% { transform: rotate(5deg); }
+.letter-row {
+    display: flex;
+    justify-content: center;
+}
+.letter {
+    width: 30px;
+    height: 30px;
+    margin: 3px;
+    font-size: 18px;
+    text-align: center;
+    line-height: 30px;
+    border: 1px solid black;
 }
 </style>
 </head>
@@ -67,26 +76,70 @@ body {
 <input type="text" id="guessInput" placeholder="type youre word">
 <button onclick="checkguess()">take a guess</button>
 <p id="message"></p>
+<div id="alphabet"></div>
 
 <script>
 var words = ["sex"];
 var word = words[Math.floor(Math.random() * words.length)];
 var attemps = 0;
 var maxAttemps = 6;
+var guesses = [];
+var letterStatuses = {};
 
-function makeBoard(guessLength) {
+function makeBoard() {
     var board = document.getElementById("gameBoard");
     board.innerHTML = "";
+    var latestGuessLength = guesses.length > 0 ? guesses[guesses.length - 1].length : 5;
     for (var i = 0; i < maxAttemps; i++) {
         var row = document.createElement("div");
         row.className = "row";
-        for (var j = 0; j < (guessLength || 5); j++) {
+        var guessLength = guesses[i] ? guesses[i].length : latestGuessLength;
+        for (var j = 0; j < guessLength; j++) {
             var cell = document.createElement("div");
             cell.className = "cell";
+            if (guesses[i]) {
+                cell.innerText = guesses[i][j];
+                if (guesses[i][j] == word[j]) {
+                    cell.classList.add("correct");
+                } else if (word.includes(guesses[i][j])) {
+                    cell.classList.add("close");
+                } else {
+                    cell.classList.add("wrong");
+                }
+            }
             row.appendChild(cell);
         }
         board.appendChild(row);
     }
+    updateAlphabet();
+}
+
+function updateAlphabet() {
+    var alphabetDiv = document.getElementById("alphabet");
+    alphabetDiv.innerHTML = "";
+    var keyboardLayout = [
+        "qwertyuiop".split(""),
+        "asdfghjkl".split(""),
+        "zxcvbnm".split("")
+    ];
+    keyboardLayout.forEach(function(rowLetters) {
+        var letterRow = document.createElement("div");
+        letterRow.className = "letter-row";
+        rowLetters.forEach(function(letter) {
+            var letterDiv = document.createElement("div");
+            letterDiv.className = "letter";
+            letterDiv.innerText = letter;
+            if (letterStatuses[letter] == "correct") {
+                letterDiv.classList.add("correct");
+            } else if (letterStatuses[letter] == "close") {
+                letterDiv.classList.add("close");
+            } else if (letterStatuses[letter] == "wrong") {
+                letterDiv.classList.add("wrong");
+            }
+            letterRow.appendChild(letterDiv);
+        });
+        alphabetDiv.appendChild(letterRow);
+    });
 }
 
 function checkguess() {
@@ -96,25 +149,18 @@ function checkguess() {
         return;
     }
 
-    makeBoard(guess.length);
-
-    var rows = document.getElementsByClassName("row");
-    var cells = rows[attemps].getElementsByClassName("cell");
-
+    guesses[attemps] = guess;
     for (var i = 0; i < guess.length; i++) {
-        cells[i].innerText = guess[i];
-        if (guess.length > 10) {
-            cells[i].classList.add("weird");
-            document.getElementById("message").innerText = "long word = gay letter dance";
-        }
         if (guess[i] == word[i]) {
-            cells[i].classList.add("correct");
-        } else if (word.includes(guess[i])) {
-            cells[i].classList.add("close");
-        } else {
-            cells[i].classList.add("wrong");
+            letterStatuses[guess[i]] = "correct";
+        } else if (word.includes(guess[i]) && letterStatuses[guess[i]] != "correct") {
+            letterStatuses[guess[i]] = "close";
+        } else if (!word.includes(guess[i]) && !letterStatuses[guess[i]]) {
+            letterStatuses[guess[i]] = "wrong";
         }
     }
+
+    makeBoard();
 
     attemps++;
 
@@ -126,10 +172,20 @@ function checkguess() {
         document.getElementById("message").innerText = "OOPS U LOST!! word was " + word + " 😭 (now hang yourself)";
         document.getElementById("guessInput").disabled = true;
         document.querySelector("button").disabled = true;
+    } else if (word.startsWith(guess) && guess.length < word.length) {
+        document.getElementById("message").innerText = "close, but theres more";
+    } else {
+        document.getElementById("message").innerText = "";
     }
 
     document.getElementById("guessInput").value = "";
 }
+
+document.getElementById("guessInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        checkguess();
+    }
+});
 
 makeBoard();
 </script>
