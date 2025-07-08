@@ -67,6 +67,33 @@ body {
     line-height: 30px;
     border: 1px solid black;
 }
+#customGameButton, #exitCustomGameButton, #playAgainButton, #playAgainCustomButton, #playAgainNormalButton, #customSubmitButton, #customCancelButton {
+    font-size: 16px;
+    margin: 10px;
+    padding: 5px 10px;
+    background-color: hotpink;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+#customGameContainer {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border: 3px solid hotpink;
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+}
+#customWordInput {
+    font-size: 16px;
+    padding: 5px;
+    margin: 10px;
+    border: 2px solid hotpink;
+}
 </style>
 </head>
 <body>
@@ -77,14 +104,27 @@ body {
 <button onclick="checkguess()">take a guess</button>
 <p id="message"></p>
 <div id="alphabet"></div>
+<button id="customGameButton" onclick="showCustomGameInput()" style="display: inline;">Custom Game</button>
+<button id="exitCustomGameButton" onclick="exitCustomGame()" style="display: none;">Exit Custom Game</button>
+<div id="playAgainContainer" style="display: none;">
+    <button id="playAgainButton" onclick="playAgain()">Play Again</button>
+    <button id="playAgainCustomButton" onclick="showCustomGameInput()" style="display: none;">Play Again (Custom)</button>
+    <button id="playAgainNormalButton" onclick="playAgain()" style="display: none;">Play Again (Normal)</button>
+</div>
+<div id="customGameContainer">
+    <input type="text" id="customWordInput" placeholder="Enter your custom word">
+    <button id="customSubmitButton" onclick="startCustomGame()">Submit</button>
+    <button id="customCancelButton" onclick="cancelCustomGame()">X</button>
+</div>
 
 <script>
-var words = ["sex"];
+var words = ["sex";
 var word = words[Math.floor(Math.random() * words.length)];
 var attemps = 0;
 var maxAttemps = 6;
 var guesses = [];
 var letterStatuses = {};
+var isCustomGame = false;
 
 function makeBoard() {
     var board = document.getElementById("gameBoard");
@@ -112,6 +152,8 @@ function makeBoard() {
         board.appendChild(row);
     }
     updateAlphabet();
+    document.getElementById("customGameButton").style.display = isCustomGame ? "none" : "inline";
+    document.getElementById("exitCustomGameButton").style.display = isCustomGame ? "inline" : "none";
 }
 
 function updateAlphabet() {
@@ -166,12 +208,10 @@ function checkguess() {
 
     if (guess == word) {
         document.getElementById("message").innerText = "WOW YOU WON!! YOUR A GENIUS!! 🎉 ";
-        document.getElementById("guessInput").disabled = true;
-        document.querySelector("button").disabled = true;
+        endGame();
     } else if (attemps >= maxAttemps) {
         document.getElementById("message").innerText = "OOPS U LOST!! word was " + word + " 😭 (now hang yourself)";
-        document.getElementById("guessInput").disabled = true;
-        document.querySelector("button").disabled = true;
+        endGame();
     } else if (word.startsWith(guess) && guess.length < word.length) {
         document.getElementById("message").innerText = "close, but theres more";
     } else {
@@ -181,9 +221,77 @@ function checkguess() {
     document.getElementById("guessInput").value = "";
 }
 
+function endGame() {
+    document.getElementById("guessInput").disabled = true;
+    document.querySelector("button").disabled = true;
+    document.getElementById("playAgainContainer").style.display = "block";
+    if (isCustomGame) {
+        document.getElementById("playAgainButton").style.display = "none";
+        document.getElementById("playAgainCustomButton").style.display = "inline";
+        document.getElementById("playAgainNormalButton").style.display = "inline";
+    } else {
+        document.getElementById("playAgainButton").style.display = "inline";
+        document.getElementById("playAgainCustomButton").style.display = "none";
+        document.getElementById("playAgainNormalButton").style.display = "none";
+    }
+}
+
+function showCustomGameInput() {
+    document.getElementById("customGameContainer").style.display = "flex";
+    document.getElementById("customWordInput").focus();
+}
+
+function startCustomGame() {
+    var customWord = document.getElementById("customWordInput").value.toLowerCase();
+    if (customWord && customWord.length > 0) {
+        isCustomGame = true;
+        word = customWord;
+        document.getElementById("customGameContainer").style.display = "none";
+        resetGame();
+    } else {
+        document.getElementById("message").innerText = "You didn't enter a valid word!";
+    }
+}
+
+function cancelCustomGame() {
+    document.getElementById("customGameContainer").style.display = "none";
+    document.getElementById("customWordInput").value = "";
+    document.getElementById("message").innerText = "";
+}
+
+function exitCustomGame() {
+    isCustomGame = false;
+    word = words[Math.floor(Math.random() * words.length)];
+    resetGame();
+}
+
+function playAgain() {
+    isCustomGame = false;
+    word = words[Math.floor(Math.random() * words.length)];
+    resetGame();
+}
+
+function resetGame() {
+    attemps = 0;
+    guesses = [];
+    letterStatuses = {};
+    document.getElementById("guessInput").disabled = false;
+    document.getElementById("guessInput").value = "";
+    document.querySelector("button").disabled = false;
+    document.getElementById("message").innerText = "";
+    document.getElementById("playAgainContainer").style.display = "none";
+    makeBoard();
+}
+
 document.getElementById("guessInput").addEventListener("keypress", function(event) {
     if (event.key === "Enter") {
-        checkguess();
+       化妆
+    }
+});
+
+document.getElementById("customWordInput").addEventListener("keypress", function(event) {
+    if (event.key === "Enter") {
+        startCustomGame();
     }
 });
 
