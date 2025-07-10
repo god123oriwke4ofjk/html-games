@@ -1,301 +1,518 @@
+<!DOCTYPE html>
 <html>
 <head>
-<title>PornHub.com</title>
-<style>
-body {
-    font-family: comic sans ms, arial;
-    text-align: center;
-    background-color: white;
-}
-#gameBoard {
-    margin: 20px auto;
-}
-.row {
-    display: flex;
-    justify-content: center;
-}
-.cell {
-    width: 50px;
-    height: 50px;
-    border: 3px dashed black;
-    margin: 3px;
-    font-size: 20px;
-    text-align: center;
-    line-height: 50px;
-    overflow: visible;
-    white-space: nowrap;
-}
-.correct {
-    background-color: lime;
-    color: black;
-}
-.close {
-    background-color: yellow;
-    color: black;
-}
-.wrong {
-    background-color: grey;
-}
-#message {
-    font-size: 30px;
-    color: red;
-    margin: 15px;
-    font-weight: bold;
-}
-#guessInput {
-    font-size: 18px;
-    border: 2px solid hotpink;
-    padding: 5px;
-}
-#alphabet {
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    max-width: 400px;
-}
-.letter-row {
-    display: flex;
-    justify-content: center;
-}
-.letter {
-    width: 30px;
-    height: 30px;
-    margin: 3px;
-    font-size: 18px;
-    text-align: center;
-    line-height: 30px;
-    border: 1px solid black;
-}
-#customGameButton, #exitCustomGameButton, #playAgainButton, #playAgainCustomButton, #playAgainNormalButton, #customSubmitButton, #customCancelButton {
-    font-size: 16px;
-    margin: 10px;
-    padding: 5px 10px;
-    background-color: hotpink;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
-#customGameContainer {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    border: 3px solid hotpink;
-    padding: 20px;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-}
-#customWordInput {
-    font-size: 16px;
-    padding: 5px;
-    margin: 10px;
-    border: 2px solid hotpink;
-}
-</style>
+    <title>PornHub.com</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Hebrew&family=Noto+Serif+SC&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, 'Noto Serif Hebrew', 'Noto Serif SC', sans-serif;
+            text-align: center;
+            background-color: white;
+            margin: 0;
+            padding: 26px;
+        }
+        #gameBoard {
+            margin: 26px auto;
+            max-width: 704px;
+            direction: ltr;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+        }
+        .cell {
+            width: 62px;
+            height: 62px;
+            border: 3.5px dashed black;
+            margin: 4px;
+            font-size: 25px;
+            text-align: center;
+            line-height: 62px;
+            overflow: visible;
+            white-space: nowrap;
+            font-family: Arial, 'Noto Serif Hebrew', 'Noto Serif SC', sans-serif;
+        }
+        .cell.hebrew {
+            direction: rtl;
+        }
+        .correct {
+            background-color: lime;
+            color: black;
+        }
+        .close {
+            background-color: yellow;
+            color: black;
+        }
+        .wrong {
+            background-color: grey;
+        }
+        #message {
+            font-size: 32px;
+            color: red;
+            margin: 18px;
+            font-weight: bold;
+        }
+        #guessInput {
+            font-size: 21px;
+            border: 2.6px solid #ff69b4;
+            padding: 7px;
+            margin: 13px;
+            width: 264px;
+            direction: ltr;
+            font-family: Arial, 'Noto Serif Hebrew', 'Noto Serif SC', sans-serif;
+        }
+        #alphabet {
+            margin: 26px auto;
+            max-width: 528px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .letter-row {
+            display: flex;
+            justify-content: center;
+        }
+        .letter {
+            width: 40px;
+            height: 40px;
+            margin: 4px;
+            font-size: 21px;
+            text-align: center;
+            line-height: 40px;
+            border: 1.8px solid black;
+            cursor: pointer;
+            user-select: none;
+            touch-action: manipulation;
+            font-family: Arial, 'Noto Serif Hebrew', 'Noto Serif SC', sans-serif;
+        }
+        .letter.enter-back {
+            min-width: 60px;
+        }
+        .letter:active {
+            transform: scale(0.95);
+        }
+        button, #customGameButton, #exitCustomGameButton, #playAgainButton,
+        #playAgainCustomButton, #playAgainNormalButton, #customSubmitButton,
+        #customCancelButton {
+            font-size: 18px;
+            margin: 13px;
+            padding: 7px 13px;
+            background-color: #ff69b4;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            min-height: 42px;
+            touch-action: manipulation;
+        }
+        button:active {
+            transform: scale(0.95);
+        }
+        #customGameContainer {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            border: 2.6px solid #ff69b4;
+            padding: 26px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1000;
+            max-width: 352px;
+        }
+        #customWordInput {
+            font-size: 18px;
+            padding: 7px;
+            margin: 13px;
+            border: 2.6px solid #ff69b4;
+            width: 264px;
+            direction: ltr;
+            font-family: Arial, 'Noto Serif Hebrew', 'Noto Serif SC', sans-serif;
+        }
+        #toggleKeyboard {
+            display: none;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .cell {
+                width: 10vw;
+                height: 10vw;
+                max-width: 50px;
+                max-height: 50px;
+                min-width: 35px;
+                min-height: 35px;
+                font-size: 4vw;
+                line-height: 10vw;
+                margin: 1vw;
+                border: 3px dashed black;
+            }
+            .cell.hebrew {
+                direction: rtl;
+            }
+            #message {
+                font-size: 6vw;
+                margin: 2vh;
+            }
+            #guessInput {
+                font-size: 5vw;
+                padding: 2vw;
+                width: 80vw;
+                max-width: 250px;
+                border: 2px solid #ff69b4;
+            }
+            #alphabet {
+                max-width: 90vw;
+            }
+            .letter {
+                width: 8vw;
+                height: 8vw;
+                max-width: 40px;
+                max-height: 40px;
+                min-width: 30px;
+                min-height: 30px;
+                font-size: 4vw;
+                line-height: 8vw;
+                margin: 1vw;
+                border: 1px solid black;
+            }
+            .letter.enter-back {
+                min-width: 12vw;
+            }
+            button, #customGameButton, #exitCustomGameButton, #playAgainButton,
+            #playAgainCustomButton, #playAgainNormalButton, #customSubmitButton,
+            #customCancelButton {
+                font-size: 4vw;
+                padding: 2vw 4vw;
+                margin: 2vw;
+                min-height: 44px;
+            }
+            #customGameContainer {
+                max-width: 80vw;
+                padding: 4vw;
+            }
+            #customWordInput {
+                font-size: 4vw;
+                padding: 2vw;
+                width: 60vw;
+                max-width: 200px;
+                border: 2px solid #ff69b4;
+            }
+            #toggleKeyboard {
+                display: inline-block;
+            }
+            #alphabet {
+                display: none;
+            }
+            #alphabet.visible {
+                display: flex;
+            }
+        }
+        @media (orientation: landscape) and (max-width: 600px) {
+            .cell {
+                width: 8vh;
+                height: 8vh;
+                line-height: 8vh;
+                font-size: 4vh;
+            }
+            .letter {
+                width: 8vh;
+                height: 8vh;
+                line-height: 8vh;
+                font-size: 4vh;
+            }
+            .letter.enter-back {
+                min-width: 12vh;
+            }
+        }
+    </style>
 </head>
 <body>
-<h1>TOTALLY NORMAL WORDLE</h1>
-<p>if you guess wrong you have to kill yourself</p>
-<div id="gameBoard"></div>
-<input type="text" id="guessInput" placeholder="type youre word">
-<button onclick="checkguess()">take a guess</button>
-<p id="message"></p>
-<div id="alphabet"></div>
-<button id="customGameButton" onclick="showCustomGameInput()" style="display: inline;">Custom Game</button>
-<button id="exitCustomGameButton" onclick="exitCustomGame()" style="display: none;">Exit Custom Game</button>
-<div id="playAgainContainer" style="display: none;">
-    <button id="playAgainButton" onclick="playAgain()">Play Again</button>
-    <button id="playAgainCustomButton" onclick="showCustomGameInput()" style="display: none;">Play Again (Custom)</button>
-    <button id="playAgainNormalButton" onclick="playAgain()" style="display: none;">Play Again (Normal)</button>
-</div>
-<div id="customGameContainer">
-    <input type="text" id="customWordInput" placeholder="Enter your custom word">
-    <button id="customSubmitButton" onclick="startCustomGame()">Submit</button>
-    <button id="customCancelButton" onclick="cancelCustomGame()">X</button>
-</div>
+    <h1>Totally Normal Wordle</h1>
+    <p>if you guess wrong you have to kill yourself</p>
+    <div id="gameBoard"></div>
+    <input type="text" id="guessInput" placeholder="Type word">
+    <button onclick="checkguess()">Submit Guess</button>
+    <button id="toggleKeyboard" onclick="toggleKeyboard()">Show Keyboard</button>
+    <p id="message"></p>
+    <div id="alphabet"></div>
+    <button id="customGameButton" onclick="showCustomGameInput()">Custom Game</button>
+    <button id="exitCustomGameButton" onclick="exitCustomGame()" style="display: none;">Exit Custom Game</button>
+    <div id="playAgainContainer" style="display: none;">
+        <button id="playAgainButton" onclick="playAgain()">Play Again</button>
+        <button id="playAgainCustomButton" onclick="showCustomGameInput()" style="display: none;">Play Again (Custom)</button>
+        <button id="playAgainNormalButton" onclick="playAgain()" style="display: none;">Play Again (Normal)</button>
+    </div>
+    <div id="customGameContainer">
+        <input type="text" id="customWordInput" placeholder="Enter your custom word">
+        <button id="customSubmitButton" onclick="startCustomGame()">Submit</button>
+        <button id="customCancelButton" onclick="cancelCustomGame()">Cancel</button>
+    </div>
 
-<script>
-var words = ["sex";
-var word = words[Math.floor(Math.random() * words.length)];
-var attemps = 0;
-var maxAttemps = 6;
-var guesses = [];
-var letterStatuses = {};
-var isCustomGame = false;
+    <script>
+        var words = ["sex", "Supercalifragilisticexpialidocious"];
+        var word = words[Math.floor(Math.random() * words.length)];
+        var attemps = 0;
+        var maxAttemps = 6;
+        var guesses = [];
+        var letterStatuses = {};
+        var isCustomGame = false;
+        var isMobile = window.innerWidth <= 600;
 
-function makeBoard() {
-    var board = document.getElementById("gameBoard");
-    board.innerHTML = "";
-    var latestGuessLength = guesses.length > 0 ? guesses[guesses.length - 1].length : 5;
-    for (var i = 0; i < maxAttemps; i++) {
-        var row = document.createElement("div");
-        row.className = "row";
-        var guessLength = guesses[i] ? guesses[i].length : latestGuessLength;
-        for (var j = 0; j < guessLength; j++) {
-            var cell = document.createElement("div");
-            cell.className = "cell";
-            if (guesses[i]) {
-                cell.innerText = guesses[i][j];
-                if (guesses[i][j] == word[j]) {
-                    cell.classList.add("correct");
-                } else if (word.includes(guesses[i][j])) {
-                    cell.classList.add("close");
-                } else {
-                    cell.classList.add("wrong");
+        function isHebrew(text) {
+            return /[\u0590-\u05FF]/.test(text);
+        }
+
+        function makeBoard() {
+            var board = document.getElementById("gameBoard");
+            board.innerHTML = "";
+            var latestGuessLength = guesses.length > 0 ? guesses[guesses.length - 1].length : 5;
+            for (var i = 0; i < maxAttemps; i++) {
+                var row = document.createElement("div");
+                row.className = "row";
+                var guessLength = guesses[i] ? guesses[i].length : latestGuessLength;
+                for (var j = 0; j < guessLength; j++) {
+                    var cell = document.createElement("div");
+                    cell.className = "cell";
+                    if (guesses[i]) {
+                        cell.innerText = guesses[i][j];
+                        if (isHebrew(guesses[i])) {
+                            cell.classList.add("hebrew");
+                        }
+                        if (guesses[i][j] == word[j]) {
+                            cell.classList.add("correct");
+                        } else if (word.includes(guesses[i][j])) {
+                            cell.classList.add("close");
+                        } else {
+                            cell.classList.add("wrong");
+                        }
+                    }
+                    row.appendChild(cell);
+                }
+                board.appendChild(row);
+            }
+            updateAlphabet();
+            document.getElementById("customGameButton").style.display = isCustomGame ? "none" : "inline";
+            document.getElementById("exitCustomGameButton").style.display = isCustomGame ? "inline" : "none";
+        }
+
+        function updateAlphabet() {
+            var alphabetDiv = document.getElementById("alphabet");
+            alphabetDiv.innerHTML = "";
+            var keyboardLayout = [
+                "qwertyuiop".split(""),
+                "asdfghjkl".split(""),
+                ["Enter", "z", "x", "c", "v", "b", "n", "m", "Back"]
+            ];
+            keyboardLayout.forEach(function(rowLetters) {
+                var letterRow = document.createElement("div");
+                letterRow.className = "letter-row";
+                rowLetters.forEach(function(letter) {
+                    var letterDiv = document.createElement("div");
+                    letterDiv.className = "letter";
+                    if (letter === "Enter" || letter === "Back") {
+                        letterDiv.classList.add("enter-back");
+                    }
+                    letterDiv.innerText = letter;
+                    if (letterStatuses[letter] == "correct") {
+                        letterDiv.classList.add("correct");
+                    } else if (letterStatuses[letter] == "close") {
+                        letterDiv.classList.add("close");
+                    } else if (letterStatuses[letter] == "wrong") {
+                        letterDiv.classList.add("wrong");
+                    }
+                    if (letter == "Enter" || letter == "Back") {
+                        letterDiv.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            handleVirtualKey(letter);
+                            if (isMobile) document.getElementById("guessInput").blur();
+                        });
+                    } else {
+                        letterDiv.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            addLetter(letter);
+                            if (isMobile) document.getElementById("guessInput").blur();
+                        });
+                    }
+                    letterRow.appendChild(letterDiv);
+                });
+                alphabetDiv.appendChild(letterRow);
+            });
+        }
+
+        function addLetter(letter) {
+            var input = document.getElementById("guessInput");
+            input.value += letter;
+            if (!isMobile) input.focus();
+        }
+
+        function handleVirtualKey(key) {
+            var input = document.getElementById("guessInput");
+            if (key == "Enter") {
+                checkguess();
+            } else if (key == "Back") {
+                input.value = input.value.slice(0, -1);
+            }
+            if (!isMobile) input.focus();
+        }
+
+        function toggleKeyboard() {
+            var alphabet = document.getElementById("alphabet");
+            var toggleButton = document.getElementById("toggleKeyboard");
+            if (alphabet.classList.contains("visible")) {
+                alphabet.classList.remove("visible");
+                toggleButton.innerText = "Show Keyboard";
+            } else {
+                alphabet.classList.add("visible");
+                toggleButton.innerText = "Hide Keyboard";
+            }
+        }
+
+        function checkguess() {
+            var guess = document.getElementById("guessInput").value.toLowerCase();
+            if (guess.length < 1) {
+                document.getElementById("message").innerText = "Type somethin!";
+                return;
+            }
+
+            guesses[attemps] = guess;
+            for (var i = 0; i < guess.length; i++) {
+                if (guess[i] == word[i]) {
+                    letterStatuses[guess[i]] = "correct";
+                } else if (word.includes(guess[i]) && letterStatuses[guess[i]] != "correct") {
+                    letterStatuses[guess[i]] = "close";
+                } else if (!word.includes(guess[i]) && !letterStatuses[guess[i]]) {
+                    letterStatuses[guess[i]] = "wrong";
                 }
             }
-            row.appendChild(cell);
-        }
-        board.appendChild(row);
-    }
-    updateAlphabet();
-    document.getElementById("customGameButton").style.display = isCustomGame ? "none" : "inline";
-    document.getElementById("exitCustomGameButton").style.display = isCustomGame ? "inline" : "none";
-}
 
-function updateAlphabet() {
-    var alphabetDiv = document.getElementById("alphabet");
-    alphabetDiv.innerHTML = "";
-    var keyboardLayout = [
-        "qwertyuiop".split(""),
-        "asdfghjkl".split(""),
-        "zxcvbnm".split("")
-    ];
-    keyboardLayout.forEach(function(rowLetters) {
-        var letterRow = document.createElement("div");
-        letterRow.className = "letter-row";
-        rowLetters.forEach(function(letter) {
-            var letterDiv = document.createElement("div");
-            letterDiv.className = "letter";
-            letterDiv.innerText = letter;
-            if (letterStatuses[letter] == "correct") {
-                letterDiv.classList.add("correct");
-            } else if (letterStatuses[letter] == "close") {
-                letterDiv.classList.add("close");
-            } else if (letterStatuses[letter] == "wrong") {
-                letterDiv.classList.add("wrong");
+            makeBoard();
+
+            attemps++;
+
+            if (guess == word) {
+                document.getElementById("message").innerText = "WOW YOU WIN!";
+                endGame();
+            } else if (attemps >= maxAttemps) {
+                document.getElementById("message").innerText = "Nah uh! The word was " + word + " (now hang yourself)";
+                endGame();
+            } else if (word.startsWith(guess) && guess.length < word.length) {
+                document.getElementById("message").innerText = "You're close, but the word is longer!";
+            } else {
+                document.getElementById("message").innerText = "";
             }
-            letterRow.appendChild(letterDiv);
-        });
-        alphabetDiv.appendChild(letterRow);
-    });
-}
 
-function checkguess() {
-    var guess = document.getElementById("guessInput").value.toLowerCase();
-    if (guess.length < 1) {
-        document.getElementById("message").innerText = "dude, type SOMETHING!!";
-        return;
-    }
-
-    guesses[attemps] = guess;
-    for (var i = 0; i < guess.length; i++) {
-        if (guess[i] == word[i]) {
-            letterStatuses[guess[i]] = "correct";
-        } else if (word.includes(guess[i]) && letterStatuses[guess[i]] != "correct") {
-            letterStatuses[guess[i]] = "close";
-        } else if (!word.includes(guess[i]) && !letterStatuses[guess[i]]) {
-            letterStatuses[guess[i]] = "wrong";
+            document.getElementById("guessInput").value = "";
+            if (!isMobile) document.getElementById("guessInput").focus();
+            else document.getElementById("guessInput").blur();
         }
-    }
 
-    makeBoard();
+        function endGame() {
+            document.getElementById("guessInput").disabled = true;
+            document.querySelector("button[onclick='checkguess()']").disabled = true;
+            document.getElementById("playAgainContainer").style.display = "block";
+            if (isCustomGame) {
+                document.getElementById("playAgainButton").style.display = "none";
+                document.getElementById("playAgainCustomButton").style.display = "inline";
+                document.getElementById("playAgainNormalButton").style.display = "inline";
+            } else {
+                document.getElementById("playAgainButton").style.display = "inline";
+                document.getElementById("playAgainCustomButton").style.display = "none";
+                document.getElementById("playAgainNormalButton").style.display = "none";
+            }
+        }
 
-    attemps++;
+        function showCustomGameInput() {
+            document.getElementById("customGameContainer").style.display = "flex";
+            document.getElementById("customWordInput").focus();
+        }
 
-    if (guess == word) {
-        document.getElementById("message").innerText = "WOW YOU WON!! YOUR A GENIUS!! 🎉 ";
-        endGame();
-    } else if (attemps >= maxAttemps) {
-        document.getElementById("message").innerText = "OOPS U LOST!! word was " + word + " 😭 (now hang yourself)";
-        endGame();
-    } else if (word.startsWith(guess) && guess.length < word.length) {
-        document.getElementById("message").innerText = "close, but theres more";
-    } else {
-        document.getElementById("message").innerText = "";
-    }
+        function startCustomGame() {
+            var customWord = document.getElementById("customWordInput").value.toLowerCase();
+            if (customWord && customWord.length > 0) {
+                isCustomGame = true;
+                word = customWord;
+                document.getElementById("customGameContainer").style.display = "none";
+                resetGame();
+            } else {
+                document.getElementById("message").innerText = "Please enter a valid word!";
+            }
+        }
 
-    document.getElementById("guessInput").value = "";
-}
+        function cancelCustomGame() {
+            document.getElementById("customGameContainer").style.display = "none";
+            document.getElementById("customWordInput").value = "";
+            document.getElementById("message").innerText = "";
+        }
 
-function endGame() {
-    document.getElementById("guessInput").disabled = true;
-    document.querySelector("button").disabled = true;
-    document.getElementById("playAgainContainer").style.display = "block";
-    if (isCustomGame) {
-        document.getElementById("playAgainButton").style.display = "none";
-        document.getElementById("playAgainCustomButton").style.display = "inline";
-        document.getElementById("playAgainNormalButton").style.display = "inline";
-    } else {
-        document.getElementById("playAgainButton").style.display = "inline";
-        document.getElementById("playAgainCustomButton").style.display = "none";
-        document.getElementById("playAgainNormalButton").style.display = "none";
-    }
-}
+        function exitCustomGame() {
+            isCustomGame = false;
+            word = words[Math.floor(Math.random() * words.length)];
+            resetGame();
+        }
 
-function showCustomGameInput() {
-    document.getElementById("customGameContainer").style.display = "flex";
-    document.getElementById("customWordInput").focus();
-}
+        function playAgain() {
+            isCustomGame = false;
+            word = words[Math.floor(Math.random() * words.length)];
+            resetGame();
+        }
 
-function startCustomGame() {
-    var customWord = document.getElementById("customWordInput").value.toLowerCase();
-    if (customWord && customWord.length > 0) {
-        isCustomGame = true;
-        word = customWord;
-        document.getElementById("customGameContainer").style.display = "none";
-        resetGame();
-    } else {
-        document.getElementById("message").innerText = "You didn't enter a valid word!";
-    }
-}
+        function resetGame() {
+            attemps = 0;
+            guesses = [];
+            letterStatuses = {};
+            document.getElementById("guessInput").disabled = false;
+            document.getElementById("guessInput").value = "";
+            document.querySelector("button[onclick='checkguess()']").disabled = false;
+            document.getElementById("message").innerText = "";
+            document.getElementById("playAgainContainer").style.display = "none";
+            makeBoard();
+            if (!isMobile) document.getElementById("guessInput").focus();
+            else document.getElementById("guessInput").blur();
+        }
 
-function cancelCustomGame() {
-    document.getElementById("customGameContainer").style.display = "none";
-    document.getElementById("customWordInput").value = "";
-    document.getElementById("message").innerText = "";
-}
+        document.getElementById("guessInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                checkguess();
+            }
+        });
 
-function exitCustomGame() {
-    isCustomGame = false;
-    word = words[Math.floor(Math.random() * words.length)];
-    resetGame();
-}
+        document.getElementById("customWordInput").addEventListener("keypress", function(event) {
+            if (event.key === "Enter") {
+                startCustomGame();
+            }
+        });
 
-function playAgain() {
-    isCustomGame = false;
-    word = words[Math.floor(Math.random() * words.length)];
-    resetGame();
-}
+        document.getElementById("guessInput").addEventListener("focus", function(event) {
+            if (isMobile && document.getElementById("alphabet").classList.contains("visible")) {
+                event.target.blur();
+            }
+        });
 
-function resetGame() {
-    attemps = 0;
-    guesses = [];
-    letterStatuses = {};
-    document.getElementById("guessInput").disabled = false;
-    document.getElementById("guessInput").value = "";
-    document.querySelector("button").disabled = false;
-    document.getElementById("message").innerText = "";
-    document.getElementById("playAgainContainer").style.display = "none";
-    makeBoard();
-}
+        document.querySelector("button[onclick='checkguess()']").addEventListener("click", function(e) {
+            if (isMobile) {
+                e.preventDefault();
+                document.getElementById("guessInput").blur();
+                checkguess();
+            }
+        });
 
-document.getElementById("guessInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-       化妆
-    }
-});
+        document.addEventListener("touchstart", function(event) {
+            if (event.touches.length > 1) {
+                event.preventDefault();
+            }
+        }, { passive: false });
 
-document.getElementById("customWordInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        startCustomGame();
-    }
-});
+        window.addEventListener("resize", function() {
+            isMobile = window.innerWidth <= 600;
+        });
 
-makeBoard();
-</script>
+        makeBoard();
+        if (!isMobile) document.getElementById("guessInput").focus();
+    </script>
 </body>
 </html>
